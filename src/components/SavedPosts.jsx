@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux'
 import { Grid, Typography } from "@material-ui/core";
 //import { Post } from './';
 import { EditPost } from './Forms';
 import api from '../api';
 
-const SavedPosts = ({ user }) => {
+const SavedPosts = () => {
 
+    const user = useSelector(state => state.user)
     const [posts, setPosts] = useState([]);
     const [postCount, setPostCount] = useState(0);
     const [editPost, openEditForm] = useState(null);
@@ -23,12 +25,6 @@ const SavedPosts = ({ user }) => {
         .then(resp => { console.log(resp.data); getPosts(); })
         .catch(err => console.error(err.message));
     };
-
-    // const deleteById = id => {
-    //     api.delete(`post/${id}/`)
-    //     .then(resp => { console.log('Delete', resp.data); getPosts(); })
-    //     .catch(err => console.log(err));
-    // };
 
     const getPosts = fromUser => {
         const data = [];

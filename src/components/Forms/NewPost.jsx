@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux'
 import { Grow, Button, IconButton } from "@material-ui/core";
 import { Close } from '@material-ui/icons';
 import FileBase from 'react-file-base64';
 
-const NewPost = ({ closeForm, addPost, creator }) => {
+const NewPost = ({ addPost }) => {
 
+    const dispatch = useDispatch()
+
+    const creator = useSelector(state => state.user)
     const [title, setTitle] = useState('');
     const [img, setIMG] = useState('');
 
@@ -14,6 +18,8 @@ const NewPost = ({ closeForm, addPost, creator }) => {
         closeForm();
         e.preventDefault();
     }
+
+    const closeForm = () => dispatch({ type: 'SET_NEW_FORM', payload: false })
 
     return(
         <Grow in>

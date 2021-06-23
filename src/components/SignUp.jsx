@@ -1,21 +1,26 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux'
 import { Grow, Grid, Paper, Typography, TextField, Button  } from '@material-ui/core';
 import GoogleLogin from 'react-google-login';
 import { AuthAPI } from '../api';
+import { authUser } from '../static/functions'
 
 const CLIENT_ID='545124959549-2d6bjd431tf3he2ak5itpvp22o6l4h6o.apps.googleusercontent.com';
 
-const LogIn = ({ authUser }) => {
+const LogIn = () => {
+
+    const dispatch = useDispatch()
+    const { push } = useHistory()
 
     const [ fields, setFields ] = useState({ name: '', email: '', password: '', confirmPassword: '' });
     const [error, setError] = useState('');
 
-    const handleSubmit = () => AuthAPI.register(fields, (authInfo, err) => err ? setError(err) : authUser(authInfo));
+    const handleSubmit = () => AuthAPI.register(fields, (userInfo, err) => err ? setError(err) : authUser({ userInfo, push, dispatch }));
 
     const googleSuccess = ({ profileObj }) => {
         const { name, email, imageUrl } = profileObj;
-        AuthAPI.google({ email, name, urlPic: imageUrl }, (authInfo, err) => err ? setError(err) : authUser(authInfo));
+        AuthAPI.google({ email, name, urlPic: imageUrl }, (userInfo, err) => err ? setError(err) : authUser({ userInfo, push, dispatch }));
     };
 
     const googleFailure = err => console.log(err);

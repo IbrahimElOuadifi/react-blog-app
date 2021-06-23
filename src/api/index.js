@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://localhost:5000/' || 'https://mern-blog-2456.herokuapp.com/';
+const baseURL = 'https://mern-blog-2456.herokuapp.com/';
 
 export default axios.create({
     baseURL,

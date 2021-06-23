@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Typography, IconButton } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { UserAPI, CommentAPI } from '../api';
 
-const Comment = ({ id, fromUser, text, creatorId, user, getComments }) => {
+const Comment = ({ id, fromUser, text, creatorId, getComments }) => {
 
+    const user = useSelector(state => state.user)
     const [name, setName] = useState('');
 
     useEffect(()=> {

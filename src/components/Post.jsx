@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Grid, Card, CardHeader, CardMedia, CardContent, CardActions, Avatar,IconButton, Typography, Button } from '@material-ui/core';
+import { useSelector, useDispatch } from 'react-redux'
+import { Grid, Card, CardHeader, CardMedia, CardContent, CardActions, Avatar,IconButton, Typography, Button, TextField } from '@material-ui/core';
 import { Favorite, FavoriteBorder, Share, Bookmark, BookmarkBorder, MoreVert, DeleteOutline } from '@material-ui/icons';
 import Comment from './Comment';
 import { UserAPI, FollowAPI, CommentAPI, LikeAPI, SaveAPI } from '../api';
 
-const Post = ({ data, user, deleteById, editForm }) => {
+const Post = ({ data, deleteById }) => {
 
+    const dispatch = useDispatch();
+
+    const user = useSelector(state => state.user)
     const [comments, setComments] = useState([]);
     const [likes, setLikes] = useState([]);
     const [saves, setSaves] = useState([]);
@@ -27,6 +31,7 @@ const Post = ({ data, user, deleteById, editForm }) => {
     const HandelSubmit = e => {
         e.preventDefault();
         createComment();
+        setText('');
     };
 
     const getComments = () => CommentAPI.get(data._id, data => setComments(data));
@@ -58,6 +63,8 @@ const Post = ({ data, user, deleteById, editForm }) => {
 
     const getDate = () => `${data.createAt.split('T')[0]} - ${data.createAt.split('T')[1].split('.')[0]}`;
 
+    const editForm = () => dispatch({ type: 'SET_EDIT_FORM', payload: data })
+
     return(
         <Grid item style={{ width: '100%' }}>
             <Card>
@@ -70,8 +77,8 @@ const Post = ({ data, user, deleteById, editForm }) => {
                 </Link>
             }
             action={
-                data.creator === user._id 
-                ? (<IconButton onClick={editForm.bind(this, data)}><MoreVert /></IconButton>)
+                data.creator === user._id
+                ? (<IconButton onClick={editForm}><MoreVert /></IconButton>)
                 : isFollowing ? <Button size="small" variant="text" color="secondary"  onClick={handleFollow}>Unfolow</Button> : <Button size="small" variant="text" color="primary" onClick={handleFollow}>Folow</Button>
             }
             title={<b><Link to={`/user/${data.creator}`}>{name}</Link></b>}
@@ -107,26 +114,25 @@ const Post = ({ data, user, deleteById, editForm }) => {
                     {/* <b>{data.creator}</b> */}{data.title}
                 </Typography>
                 <hr/>
-                { comments.map(({ _id, fromUser, text }) => {
-
-                    return(
-                        <Comment key={_id} id={_id} text={text} fromUser={fromUser} creatorId={data.creator} user={user} getComments={getComments} />
-                    );
-                }) }
+                { 
+                    comments.map(({ _id, fromUser, text }) => {
+                        return (<Comment key={_id} id={_id} text={text} fromUser={fromUser} creatorId={data.creator} getComments={getComments} />)
+                    })
+                }
+                {
+                    user._id !== null &&
+                    (
+                        <CardContent>
+                            <form onSubmit={HandelSubmit}>
+                                <div className="input-group">
+                                <TextField className='form-control' variant="standard" value={text} onChange={e => setText(e.target.value)} required />
+                                <Button type="submit" variant="text" color="primary">POST</Button>
+                                </div>
+                            </form>
+                        </CardContent>
+                    )
+                }
             </CardContent>
-            {
-                user._id !== null &&
-                (
-                    <CardContent>
-                        <form onSubmit={HandelSubmit}>
-                            <div className="input-group">
-                            <input className='form-control' value={text} onChange={e => setText(e.target.value)} required />
-                            <button type="submit" className=" btn btn-outline-primary">POST</button>
-                            </div>
-                        </form>
-                    </CardContent>
-                )
-            }
             </Card>
         </Grid>
     )

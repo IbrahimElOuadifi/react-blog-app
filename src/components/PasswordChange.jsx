@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux'
 import { Grow, Grid, Paper, Typography, TextField, Button  } from '@material-ui/core';
 import { AuthAPI } from '../api';
+import { authUser } from '../static/functions'
 
-const PasswordChange = ({ user, authUser }) => {
+const PasswordChange = () => {
 
+    const user = useSelector(state => state.user)
     const [pass, setPass] = useState(null);
     const [fields, setFields] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
     const [error, setError] = useState('');
+
+    const dispatch = useDispatch()
+    const { push } = useHistory()
 
     useEffect(() => {
         AuthAPI.getPass(user._id,(pass, err) => err ? setError(err) : setPass(pass));
     }, [user]);
 
-    const handleSubmit = () => AuthAPI.setPass(user._id, fields, (userInfo, err) => err ? setError(err) : authUser(userInfo));
+    const handleSubmit = () => AuthAPI.setPass(user._id, fields, (userInfo, err) => err ? setError(err) : authUser({ userInfo, push, dispatch }));
 
     return(
         <Grow in>
