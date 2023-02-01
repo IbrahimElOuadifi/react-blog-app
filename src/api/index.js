@@ -1,6 +1,10 @@
 import axios from 'axios';
+import { config } from 'dotenv'
 
-const baseURL = 'https://mern-blog-2456.herokuapp.com/';
+config();
+
+// const baseURL = 'https://mern-blog-2456.herokuapp.com/';
+const baseURL = process.env.API_URL;
 
 export default axios.create({
     baseURL,
